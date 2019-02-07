@@ -5,9 +5,13 @@
   "author": "Ugljesa Pantic",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "bluebird": "^3.5.3",
     "jsonwebtoken": "^8.4.0",
     "mongoose": "^5.4.9",
     "validator": "^10.11.0"
+  },
+  "devDependencies": {
+    "serverless-offline": "^4.2.2"
   }
 }

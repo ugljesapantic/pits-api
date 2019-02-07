@@ -1,54 +1,52 @@
 service: pits-api
 
+custom:
+  secrets: ${file(secrets.json)}
+
 provider:
   name: aws
   runtime: nodejs8.10
   region: eu-central-1
   environment:
-    AUTH0_CLIENT_ID: 481Ce2SzsvQFck8N4bmFaA7cS5O8ml8n
-    AUTH0_CLIENT_PUBLIC_KEY: ${file(./public_key)}
+    JWT_SECRET: ${self:custom.secrets.JWT_SECRET}
+    DB: ${self:custom.secrets.DB}
 
 functions:
-  auth:
-    handler: handler.auth
-    cors: true
-  publicEndpoint:
-    handler: handler.publicEndpoint
+  verify-token:
+    handler: auth/VerifyToken.auth
+
+  login:
+    handler: auth/AuthHandler.login
     events:
       - http:
-          path: api/public
+          path: login
           method: post
-          cors: true
-  privateEndpoint:
-    handler: handler.privateEndpoint
-    events:
-      - http:
-          path: api/private
-          method: post
-          # See custom authorizer docs here: http://bit.ly/2gXw9pO
-          authorizer: auth
           cors: true
 
-resources:
-  Resources:
-    # This response is needed for custom authorizer failures cors support ¯\_(ツ)_/¯
-    GatewayResponse:
-      Type: 'AWS::ApiGateway::GatewayResponse'
-      Properties:
-        ResponseParameters:
-          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
-          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
-        ResponseType: EXPIRED_TOKEN
-        RestApiId:
-          Ref: 'ApiGatewayRestApi'
-        StatusCode: '401'
-    AuthFailureGatewayResponse:
-      Type: 'AWS::ApiGateway::GatewayResponse'
-      Properties:
-        ResponseParameters:
-          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
-          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
-        ResponseType: UNAUTHORIZED
-        RestApiId:
-          Ref: 'ApiGatewayRestApi'
-        StatusCode: '401'
+  register:
+    handler: auth/AuthHandler.register
+    events:
+      - http:
+          path: register
+          method: post
+          cors: true
+
+  me:
+    handler: auth/AuthHandler.me
+    events:
+      - http:
+          path: me
+          method: get
+          cors: true
+          authorizer: verify-token
+
+  getUsers:
+    handler: user/UserHandler.getUsers
+    events:
+      - http:
+          path: users
+          method: get
+          cors: true
+
+plugins:
+  - serverless-offline
