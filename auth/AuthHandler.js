@@ -80,7 +80,7 @@ module.exports.login = (event, context) => {
       .catch(err => ({
         statusCode: err.statusCode || 500,
         headers: { 'Content-Type': 'text/plain' },
-        body: { stack: err.stack, message: err.message }
+        body: err.message
       }));
   };
 
@@ -95,7 +95,7 @@ module.exports.login = (event, context) => {
   }
   
   function comparePassword(eventPassword, userPassword, userId) {
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       bcrypt.compare(eventPassword, userPassword, function (err, res)  {
         !res ? reject(new Error('The credentials do not match.')) : resolve(signToken(userId))
       });
