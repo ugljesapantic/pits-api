@@ -6,6 +6,8 @@ const bcrypt = require('bcryptjs');
 
 /* 
  * Functions
+ * https://medium.freecodecamp.org/a-crash-course-on-securing-serverless-apis-with-json-web-tokens-ff657ab2f5a5
+ * investigate
  */
 module.exports.register = (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
@@ -93,8 +95,10 @@ module.exports.login = (event, context) => {
   }
   
   function comparePassword(eventPassword, userPassword, userId) {
-    return bcrypt.compareSync(eventPassword, userPassword, (err, res) => {
-      return !res ? Promise.reject(new Error('The credentials do not match.')) : signToken(userId)
+    return new Promise(function (resolve, reject) {
+      bcrypt.compare(eventPassword, userPassword, function (err, res)  {
+        !res ? reject(new Error('The credentials do not match.')) : resolve(signToken(userId))
+      });
     })
   }
 

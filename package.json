@@ -4,6 +4,9 @@
   "description": "Personal Issue Tracking System",
   "author": "Ugljesa Pantic",
   "license": "ISC",
+  "scripts": {
+    "start": "sls offline start --skipCacheInvalidation"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "bluebird": "^3.5.3",
