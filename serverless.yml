@@ -47,6 +47,22 @@ functions:
           path: users
           method: get
           cors: true
+  getClipboards:
+    handler: clipboard/ClipboardHandler.getAll
+    events:
+      - http:
+          path: clipboards
+          method: get
+          authorizer: verify-token
+          cors: true
+  createClipboard:
+    handler: clipboard/ClipboardHandler.create
+    events:
+      - http:
+          path: clipboards
+          method: post
+          authorizer: verify-token
+          cors: true
 
 plugins:
   - serverless-offline
