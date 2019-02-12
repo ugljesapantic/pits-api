@@ -24,7 +24,6 @@ module.exports.getAll = (event, context) => {
 
 module.exports.create = (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
-    console.log('content', event.body)
     return connectToDatabase()
         .then(createClipboard.bind(this, getUserId(event), event.body))
         .then(clipboard => ({
@@ -55,7 +54,7 @@ module.exports.create = (event, context) => {
 function createClipboard(id, body) {
     return Clipboard.create({
         user_id: id,
-        ...body
+        ...JSON.parse(body)
     })
       .then(clipboard => clipboard)
       .catch(err => Promise.reject(new Error(err)));
