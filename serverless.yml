@@ -55,11 +55,35 @@ functions:
           method: get
           authorizer: verify-token
           cors: true
+  deleteAllClipboards:
+    handler: clipboard/ClipboardHandler.deleteAll
+    events:
+      - http:
+          path: clipboards
+          method: delete
+          authorizer: verify-token
+          cors: true
   createClipboard:
     handler: clipboard/ClipboardHandler.create
     events:
       - http:
           path: clipboards
+          method: post
+          authorizer: verify-token
+          cors: true
+  getClipboardLabels:
+    handler: clipboard/ClipboardLabelHandler.getAll
+    events:
+      - http:
+          path: clipboard-labels
+          method: get
+          authorizer: verify-token
+          cors: true
+  createClipboardLabel:
+    handler: clipboard/ClipboardLabelHandler.create
+    events:
+      - http:
+          path: clipboard-labels
           method: post
           authorizer: verify-token
           cors: true

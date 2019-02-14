@@ -6,10 +6,7 @@ const Schema = mongoose.Schema;
 const ClipboardSchema = new mongoose.Schema({
     user_id: { type: Schema.Types.ObjectId, ref: 'User' },
     title: String,
-    labels: [{
-        title: String,
-        color: String,
-    }],
+    labels: [{ type: Schema.Types.ObjectId, ref: 'ClipboardLabel' },],
     items: [{
         title: String,
         value: String,

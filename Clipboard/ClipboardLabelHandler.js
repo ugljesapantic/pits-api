@@ -1,7 +1,7 @@
-// UserHandler.js
+
 
 const connectToDatabase = require('../db');
-const Clipboard = require('./Clipboard');
+const ClipboardLabel = require('./ClipboardLabel');
 
 /**
  * Functions
@@ -10,10 +10,10 @@ const Clipboard = require('./Clipboard');
 module.exports.getAll = (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   return connectToDatabase()
-    .then(getClipboards.bind(this, getUserId(event)))
-    .then(clipboards => ({
+    .then(getClipboardLabels.bind(this, getUserId(event)))
+    .then(labels => ({
         statusCode: 200,
-        body: JSON.stringify(clipboards)
+        body: JSON.stringify(labels)
     }))
     .catch(err => ({
       statusCode: err.statusCode || 500,
@@ -25,24 +25,10 @@ module.exports.getAll = (event, context) => {
 module.exports.create = (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     return connectToDatabase()
-        .then(createClipboard.bind(this, getUserId(event), event.body))
-        .then(clipboard => ({
+        .then(createClipboardLabel.bind(this, getUserId(event), event.body))
+        .then(label => ({
             statusCode: 200,
-            body: JSON.stringify(clipboard)
-        }))
-        .catch(err => ({
-            statusCode: err.statusCode || 500,
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ message: err.message })
-        }));
-  };
-
-  module.exports.deleteAll = (event, context) => {
-    context.callbackWaitsForEmptyEventLoop = false;
-    return connectToDatabase()
-        .then(deleteAllClipboards.bind(this, getUserId(event)))
-        .then(() => ({
-            statusCode: 200,
+            body: JSON.stringify(label)
         }))
         .catch(err => ({
             statusCode: err.statusCode || 500,
@@ -59,23 +45,23 @@ module.exports.create = (event, context) => {
      return event.requestContext.authorizer.principalId;
  }
 
- function getClipboards(id) {
-  return Clipboard.find({user_id: id})
-    .then(clipboards => clipboards)
+ function getClipboardLabels(id) {
+  return ClipboardLabel.find({user_id: id})
+    .then(labels => labels)
     .catch(err => Promise.reject(new Error(err)));
 }
 
-function createClipboard(id, body) {
-    return Clipboard.create({
+function createClipboardLabel(id, body) {
+    return ClipboardLabel.create({
         user_id: id,
         ...JSON.parse(body)
     })
-      .then(clipboard => clipboard)
+      .then(label => label)
       .catch(err => Promise.reject(new Error(err)));
   }
 
   function deleteAllClipboards(id) {
-    return Clipboard.deleteMany({
+    return ClipboardLabel.deleteMany({
         user_id: id,
     }).catch(err => Promise.reject(new Error(err)));
   }
