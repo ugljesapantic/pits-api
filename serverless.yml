@@ -87,6 +87,14 @@ functions:
           method: post
           authorizer: verify-token
           cors: true
+  updateItem:
+    handler: clipboard/ClipboardHandler.updateItem
+    events:
+      - http:
+          path: clipboards/{id}/items/{item_id}
+          method: patch
+          authorizer: verify-token
+          cors: true
 
 plugins:
   - serverless-offline
