@@ -54,6 +54,24 @@ module.exports.create = (event, context) => {
         }));
   };
 
+//   unify error handling jbt, also the success
+  module.exports.addItem = (event, context) => {
+    context.callbackWaitsForEmptyEventLoop = false;
+    const {id} = event.pathParameters;
+    const filter = {"_id": id};
+    return connectToDatabase()
+        .then(addItem.bind(this, filter))
+        .then(item => ({
+            statusCode: 200,
+            body: JSON.stringify(item)
+        }))
+        .catch(err => ({
+            statusCode: err.statusCode || 500,
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ message: err.message })
+        }));
+  };
+
   module.exports.deleteAll = (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     return connectToDatabase()
@@ -99,6 +117,13 @@ function createClipboard(id, body) {
           {$set: {"items.$.value": body.value,"items.$.title": body.title}},
           {new: true}).then(doc =>  doc.items.id(filter["items._id"]));
   }
+
+  function addItem(filter, body) {
+    return Clipboard.findOneAndUpdate(
+        filter, 
+        {$push: {"items": {}}},
+        {new: true}).then(doc =>  doc.items[doc.items.length - 1])
+  };
 
   function deleteAllClipboards(id) {
     return Clipboard.deleteMany({

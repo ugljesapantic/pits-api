@@ -95,6 +95,14 @@ functions:
           method: patch
           authorizer: verify-token
           cors: true
+  addItem:
+    handler: clipboard/ClipboardHandler.addItem
+    events:
+      - http:
+          path: clipboards/{id}/items
+          method: post
+          authorizer: verify-token
+          cors: true
 
 plugins:
   - serverless-offline
