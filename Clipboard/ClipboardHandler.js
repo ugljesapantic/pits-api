@@ -54,6 +54,22 @@ module.exports.create = (event, context) => {
         }));
   };
 
+  module.exports.deleteItem = (event, context) => {
+    context.callbackWaitsForEmptyEventLoop = false;
+    const {id, item_id} = event.pathParameters;
+    const filter = {"_id": id, "items._id": item_id};
+    return connectToDatabase()
+        .then(deleteItem.bind(this, filter))
+        .then(item => ({
+            statusCode: 200,
+        }))
+        .catch(err => ({
+            statusCode: err.statusCode || 500,
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ message: err.message })
+        }));
+  };
+
 //   unify error handling jbt, also the success
   module.exports.addItem = (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
@@ -117,6 +133,12 @@ function createClipboard(id, body) {
           {$set: {"items.$.value": body.value,"items.$.title": body.title}},
           {new: true}).then(doc =>  doc.items.id(filter["items._id"]));
   }
+
+  function deleteItem(filter) {
+    return Clipboard.findOneAndUpdate(
+        filter, 
+        {$pull: {items: {_id: filter["items._id"]}}});
+}
 
   function addItem(filter, body) {
     return Clipboard.findOneAndUpdate(

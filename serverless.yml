@@ -95,6 +95,14 @@ functions:
           method: patch
           authorizer: verify-token
           cors: true
+  deleteItem:
+    handler: clipboard/ClipboardHandler.deleteItem
+    events:
+      - http:
+          path: clipboards/{id}/items/{item_id}
+          method: delete
+          authorizer: verify-token
+          cors: true
   addItem:
     handler: clipboard/ClipboardHandler.addItem
     events:
