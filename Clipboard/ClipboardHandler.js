@@ -40,11 +40,12 @@ module.exports.create = (event, context) => {
   module.exports.updateItem = (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     const {id, item_id} = event.pathParameters;
+    const filter = {"_id": id, "items._id": item_id};
     return connectToDatabase()
-        .then(updateItem.bind(this, id, item_id , JSON.parse(event.body)))
-        .then(clipboard => ({
+        .then(updateItem.bind(this, filter, JSON.parse(event.body)))
+        .then(item => ({
             statusCode: 200,
-            body: JSON.stringify(clipboard)
+            body: JSON.stringify(item)
         }))
         .catch(err => ({
             statusCode: err.statusCode || 500,
@@ -90,10 +91,13 @@ function createClipboard(id, body) {
       .catch(err => Promise.reject(new Error(err)));
   }
 
-  function updateItem(id, item_id, body) {
-      console.log(body.value, id, item_id, body.title);
-      return Clipboard.update({"_id": id, "items._id": item_id}, 
-      {$set: {"items.$.value": body.value,"items.$.title": body.title}})
+//   SOME ERROR HANDLIN
+
+  function updateItem(filter, body) {
+      return Clipboard.findOneAndUpdate(
+          filter, 
+          {$set: {"items.$.value": body.value,"items.$.title": body.title}},
+          {new: true}).then(doc =>  doc.items.id(filter["items._id"]));
   }
 
   function deleteAllClipboards(id) {
