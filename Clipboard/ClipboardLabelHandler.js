@@ -2,6 +2,7 @@
 
 const connectToDatabase = require('../db');
 const ClipboardLabel = require('./ClipboardLabel');
+const Clipboard = require('./Clipboard');
 
 /**
  * Functions
@@ -37,6 +38,19 @@ module.exports.create = (event, context) => {
         }));
   };
 
+  module.exports.delete = (event, context) => {
+    context.callbackWaitsForEmptyEventLoop = false;
+    const {id} = event.pathParameters;
+    return connectToDatabase()
+        .then(deleteClipboardLabel.bind(this, getUserId(event), id))
+        .catch(err => ({
+            statusCode: err.statusCode || 500,
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ message: err.message })
+        }));
+  };
+
+
 /**
  * Helpers
  */
@@ -60,8 +74,14 @@ function createClipboardLabel(id, body) {
       .catch(err => Promise.reject(new Error(err)));
   }
 
-  function deleteAllClipboards(id) {
-    return ClipboardLabel.deleteMany({
-        user_id: id,
-    }).catch(err => Promise.reject(new Error(err)));
+// todo  this must delete all the references from all the users i think , use pre hooks
+  function deleteClipboardLabel(user_id, id) {
+        return Clipboard.updateMany({
+            user_id
+        }, {$pull: {labels: id}}).then(() => {
+        return ClipboardLabel.deleteOne({
+            _id: id,
+            user_id, user_id
+        }).catch(err => Promise.reject(new Error(err)))
+      });
   }

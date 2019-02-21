@@ -87,6 +87,14 @@ functions:
           method: post
           authorizer: verify-token
           cors: true
+  deleteClipboardLabel:
+    handler: clipboard/ClipboardLabelHandler.delete
+    events:
+      - http:
+          path: clipboard-labels/{id}
+          method: delete
+          authorizer: verify-token
+          cors: true
   updateItem:
     handler: clipboard/ClipboardHandler.updateItem
     events:
