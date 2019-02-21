@@ -37,6 +37,23 @@ module.exports.create = (event, context) => {
         }));
   };
 
+  module.exports.update = (event, context) => {
+    context.callbackWaitsForEmptyEventLoop = false;
+    const {id} = event.pathParameters;
+    const filter = {"_id": id};
+    return connectToDatabase()
+        .then(update.bind(this, filter, JSON.parse(event.body)))
+        .then(clipboard => ({
+            statusCode: 200,
+            body: JSON.stringify(clipboard)
+        }))
+        .catch(err => ({
+            statusCode: err.statusCode || 500,
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ message: err.message })
+        }));
+  };
+
   module.exports.updateItem = (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     const {id, item_id} = event.pathParameters;
@@ -133,6 +150,14 @@ function createClipboard(id, body) {
           {$set: {"items.$.value": body.value,"items.$.title": body.title}},
           {new: true}).then(doc =>  doc.items.id(filter["items._id"]));
   }
+
+  function update(filter, body) {
+    return Clipboard.findOneAndUpdate(
+        filter, 
+        {$set: {"title": body.title}},
+        {new: true});
+}
+
 
   function deleteItem(filter) {
     return Clipboard.findOneAndUpdate(

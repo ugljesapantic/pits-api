@@ -71,6 +71,14 @@ functions:
           method: post
           authorizer: verify-token
           cors: true
+  updateClipboard:
+    handler: clipboard/ClipboardHandler.update
+    events:
+      - http:
+          path: clipboards/{id}
+          method: patch
+          authorizer: verify-token
+          cors: true
   getClipboardLabels:
     handler: clipboard/ClipboardLabelHandler.getAll
     events:
