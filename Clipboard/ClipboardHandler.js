@@ -54,6 +54,8 @@ module.exports.create = (event, context) => {
         }));
   };
 
+
+
   module.exports.updateItem = (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     const {id, item_id} = event.pathParameters;
@@ -109,6 +111,21 @@ module.exports.create = (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     return connectToDatabase()
         .then(deleteAllClipboards.bind(this, getUserId(event)))
+        .then(() => ({
+            statusCode: 200,
+        }))
+        .catch(err => ({
+            statusCode: err.statusCode || 500,
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ message: err.message })
+        }));
+  };
+
+  module.exports.remove = (event, context) => {
+    context.callbackWaitsForEmptyEventLoop = false;
+    const filter = {user_id: getUserId(event), _id: event.pathParameters.id}
+    return connectToDatabase()
+        .then(remove.bind(this, filter))
         .then(() => ({
             statusCode: 200,
         }))
@@ -176,4 +193,8 @@ function createClipboard(id, body) {
     return Clipboard.deleteMany({
         user_id: id,
     }).catch(err => Promise.reject(new Error(err)));
+  }
+
+  function remove(filter) {
+    return Clipboard.deleteOne(filter).catch(err => Promise.reject(new Error(err)));
   }

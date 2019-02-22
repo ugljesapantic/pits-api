@@ -79,6 +79,14 @@ functions:
           method: patch
           authorizer: verify-token
           cors: true
+  removeClipboard:
+    handler: clipboard/ClipboardHandler.remove
+    events:
+      - http:
+          path: clipboards/{id}
+          method: delete
+          authorizer: verify-token
+          cors: true
   getClipboardLabels:
     handler: clipboard/ClipboardLabelHandler.getAll
     events:
