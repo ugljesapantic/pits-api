@@ -1,3 +1,5 @@
 node_modules
 .serverless
 secrets.json
+secrets.prod.json
+secrets.dev.json

@@ -1,12 +1,13 @@
 service: pits-api
 
 custom:
-  secrets: ${file(secrets.json)}
+  secrets: ${file(secrets.${self:provider.stage}.json)}
 
 provider:
   name: aws
   runtime: nodejs8.10
   region: eu-central-1
+  stage: ${opt:stage, 'dev'}
   environment:
     JWT_SECRET: ${self:custom.secrets.JWT_SECRET}
     DB: ${self:custom.secrets.DB}
