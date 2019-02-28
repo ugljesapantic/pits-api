@@ -171,7 +171,7 @@ function createClipboard(id, body) {
   function update(filter, body) {
     return Clipboard.findOneAndUpdate(
         filter, 
-        {$set: {"title": body.title}},
+        {$set: body},
         {new: true});
 }
 
