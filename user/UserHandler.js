@@ -1,7 +1,7 @@
 // UserHandler.js
-
 const connectToDatabase = require('../db');
 const User = require('./User');
+const successResponse = require('./../utls/http.utils');
 
 /**
  * Functions
@@ -11,10 +11,7 @@ module.exports.getUsers = (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   return connectToDatabase()
     .then(getUsers)
-    .then(users => ({
-      statusCode: 200,
-      body: JSON.stringify(users)
-    }))
+    .then(successResponse)
     .catch(err => ({
       statusCode: err.statusCode || 500,
       headers: { 'Content-Type': 'text/plain' },

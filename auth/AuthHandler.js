@@ -1,8 +1,9 @@
-
 const connectToDatabase = require('../db');
 const User = require('../user/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+// TODO use imports everywhere
+const {successResponse, errorResponse} = require('./../utls/http.utils');
 
 /* 
  * Functions
@@ -15,15 +16,8 @@ module.exports.register = (event, context) => {
     .then(() =>
       register(JSON.parse(event.body))
     )
-    .then(session => ({
-      statusCode: 200,
-      body: JSON.stringify(session)
-    }))
-    .catch(err => ({
-      statusCode: err.statusCode || 500,
-      headers: { 'Content-Type': 'text/plain' },
-      body: err.message
-    }));
+    .then(successResponse)
+    .catch(errorResponse);
 };
 
 function signToken(id) {
@@ -73,10 +67,7 @@ module.exports.login = (event, context) => {
       .then(() =>
         login(JSON.parse(event.body))
       )
-      .then(session => ({
-        statusCode: 200,
-        body: JSON.stringify(session)
-      }))
+      .then((t) => successResponse(t))
       .catch(err => ({
         statusCode: err.statusCode || 500,
         headers: { 'Content-Type': 'text/plain' },
@@ -109,10 +100,7 @@ module.exports.login = (event, context) => {
       .then(() =>
         me(event.requestContext.authorizer.principalId) // the decoded.id from the VerifyToken.auth will be passed along as the principalId under the authorizer
       )
-      .then(session => ({
-        statusCode: 200,
-        body: JSON.stringify(session)
-      }))
+      .then(successResponse)
       .catch(err => ({
         statusCode: err.statusCode || 500,
         headers: { 'Content-Type': 'text/plain' },

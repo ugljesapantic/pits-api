@@ -1,8 +1,7 @@
-
-
 const connectToDatabase = require('../db');
 const ClipboardLabel = require('./ClipboardLabel');
 const Clipboard = require('./Clipboard');
+const {successResponse, errorResponse} = require('./../utls/http.utils');
 
 /**
  * Functions
@@ -12,30 +11,16 @@ module.exports.getAll = (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   return connectToDatabase()
     .then(getClipboardLabels.bind(this, getUserId(event)))
-    .then(labels => ({
-        statusCode: 200,
-        body: JSON.stringify(labels)
-    }))
-    .catch(err => ({
-      statusCode: err.statusCode || 500,
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ message: err.message })
-    }));
+    .then(successResponse)
+    .catch(errorResponse);
 };
 
 module.exports.create = (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     return connectToDatabase()
         .then(createClipboardLabel.bind(this, getUserId(event), event.body))
-        .then(label => ({
-            statusCode: 200,
-            body: JSON.stringify(label)
-        }))
-        .catch(err => ({
-            statusCode: err.statusCode || 500,
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ message: err.message })
-        }));
+        .then(successResponse)
+        .catch(errorResponse);
   };
 
   module.exports.delete = (event, context) => {
@@ -43,11 +28,8 @@ module.exports.create = (event, context) => {
     const {id} = event.pathParameters;
     return connectToDatabase()
         .then(deleteClipboardLabel.bind(this, getUserId(event), id))
-        .catch(err => ({
-            statusCode: err.statusCode || 500,
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ message: err.message })
-        }));
+        .then(successResponse)
+        .catch(errorResponse);
   };
 
 

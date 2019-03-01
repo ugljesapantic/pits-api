@@ -1,11 +1,12 @@
 {
   "name": "pits-api",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Personal Issue Tracking System",
   "author": "Ugljesa Pantic",
   "license": "ISC",
   "scripts": {
-    "start": "sls offline start --skipCacheInvalidation"
+    "start": "sls offline start --skipCacheInvalidation",
+    "deploy": "sls deploy --stage prod --region eu-central-1"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

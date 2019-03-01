@@ -2,6 +2,7 @@
 
 const connectToDatabase = require('../db');
 const Clipboard = require('./Clipboard');
+const {successResponse, errorResponse} = require('./../utls/http.utils');
 
 /**
  * Functions
@@ -11,30 +12,16 @@ module.exports.getAll = (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   return connectToDatabase()
     .then(getClipboards.bind(this, getUserId(event)))
-    .then(clipboards => ({
-        statusCode: 200,
-        body: JSON.stringify(clipboards)
-    }))
-    .catch(err => ({
-      statusCode: err.statusCode || 500,
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ message: err.message })
-    }));
+    .then(successResponse)
+    .catch(errorResponse);
 };
 
 module.exports.create = (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     return connectToDatabase()
         .then(createClipboard.bind(this, getUserId(event), event.body))
-        .then(clipboard => ({
-            statusCode: 200,
-            body: JSON.stringify(clipboard)
-        }))
-        .catch(err => ({
-            statusCode: err.statusCode || 500,
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ message: err.message })
-        }));
+        .then(successResponse)
+        .catch(errorResponse);
   };
 
   module.exports.update = (event, context) => {
@@ -43,15 +30,8 @@ module.exports.create = (event, context) => {
     const filter = {"_id": id};
     return connectToDatabase()
         .then(update.bind(this, filter, JSON.parse(event.body)))
-        .then(clipboard => ({
-            statusCode: 200,
-            body: JSON.stringify(clipboard)
-        }))
-        .catch(err => ({
-            statusCode: err.statusCode || 500,
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ message: err.message })
-        }));
+        .then(successResponse)
+        .catch(errorResponse);
   };
 
 
@@ -62,15 +42,8 @@ module.exports.create = (event, context) => {
     const filter = {"_id": id, "items._id": item_id};
     return connectToDatabase()
         .then(updateItem.bind(this, filter, JSON.parse(event.body)))
-        .then(item => ({
-            statusCode: 200,
-            body: JSON.stringify(item)
-        }))
-        .catch(err => ({
-            statusCode: err.statusCode || 500,
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ message: err.message })
-        }));
+        .then(successResponse)
+        .catch(errorResponse);
   };
 
   module.exports.deleteItem = (event, context) => {
@@ -79,14 +52,8 @@ module.exports.create = (event, context) => {
     const filter = {"_id": id, "items._id": item_id};
     return connectToDatabase()
         .then(deleteItem.bind(this, filter))
-        .then(item => ({
-            statusCode: 200,
-        }))
-        .catch(err => ({
-            statusCode: err.statusCode || 500,
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ message: err.message })
-        }));
+        .then(successResponse)
+        .catch(errorResponse);
   };
 
 //   unify error handling jbt, also the success
@@ -96,29 +63,16 @@ module.exports.create = (event, context) => {
     const filter = {"_id": id};
     return connectToDatabase()
         .then(addItem.bind(this, filter))
-        .then(item => ({
-            statusCode: 200,
-            body: JSON.stringify(item)
-        }))
-        .catch(err => ({
-            statusCode: err.statusCode || 500,
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ message: err.message })
-        }));
+        .then(successResponse)
+        .catch(errorResponse);
   };
 
   module.exports.deleteAll = (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     return connectToDatabase()
         .then(deleteAllClipboards.bind(this, getUserId(event)))
-        .then(() => ({
-            statusCode: 200,
-        }))
-        .catch(err => ({
-            statusCode: err.statusCode || 500,
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ message: err.message })
-        }));
+        .then(successResponse)
+        .catch(errorResponse);
   };
 
   module.exports.remove = (event, context) => {
@@ -126,14 +80,8 @@ module.exports.create = (event, context) => {
     const filter = {user_id: getUserId(event), _id: event.pathParameters.id}
     return connectToDatabase()
         .then(remove.bind(this, filter))
-        .then(() => ({
-            statusCode: 200,
-        }))
-        .catch(err => ({
-            statusCode: err.statusCode || 500,
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ message: err.message })
-        }));
+        .then(successResponse)
+        .catch(errorResponse);
   };
 
 /**
@@ -141,7 +89,7 @@ module.exports.create = (event, context) => {
  */
 
  function getUserId(event) {
-     return event.requestContext.authorizer.principalId;
+    return event.requestContext.authorizer.principalId;
  }
 
  function getClipboards(id) {
