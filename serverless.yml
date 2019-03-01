@@ -48,6 +48,7 @@ functions:
           path: users
           method: get
           cors: true
+
   getClipboards:
     handler: clipboard/ClipboardHandler.getAll
     events:
@@ -56,6 +57,7 @@ functions:
           method: get
           authorizer: verify-token
           cors: true
+
   deleteAllClipboards:
     handler: clipboard/ClipboardHandler.deleteAll
     events:
@@ -64,6 +66,7 @@ functions:
           method: delete
           authorizer: verify-token
           cors: true
+
   createClipboard:
     handler: clipboard/ClipboardHandler.create
     events:
@@ -72,6 +75,7 @@ functions:
           method: post
           authorizer: verify-token
           cors: true
+
   updateClipboard:
     handler: clipboard/ClipboardHandler.update
     events:
@@ -80,6 +84,7 @@ functions:
           method: patch
           authorizer: verify-token
           cors: true
+          
   removeClipboard:
     handler: clipboard/ClipboardHandler.remove
     events:
@@ -88,6 +93,7 @@ functions:
           method: delete
           authorizer: verify-token
           cors: true
+
   getClipboardLabels:
     handler: clipboard/ClipboardLabelHandler.getAll
     events:
@@ -96,6 +102,7 @@ functions:
           method: get
           authorizer: verify-token
           cors: true
+
   createClipboardLabel:
     handler: clipboard/ClipboardLabelHandler.create
     events:
@@ -104,6 +111,7 @@ functions:
           method: post
           authorizer: verify-token
           cors: true
+
   deleteClipboardLabel:
     handler: clipboard/ClipboardLabelHandler.delete
     events:
@@ -112,6 +120,7 @@ functions:
           method: delete
           authorizer: verify-token
           cors: true
+
   updateItem:
     handler: clipboard/ClipboardHandler.updateItem
     events:
@@ -120,6 +129,7 @@ functions:
           method: patch
           authorizer: verify-token
           cors: true
+
   deleteItem:
     handler: clipboard/ClipboardHandler.deleteItem
     events:
@@ -128,6 +138,7 @@ functions:
           method: delete
           authorizer: verify-token
           cors: true
+          
   addItem:
     handler: clipboard/ClipboardHandler.addItem
     events:

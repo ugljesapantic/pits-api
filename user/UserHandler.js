@@ -11,7 +11,7 @@ module.exports.getUsers = (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   return connectToDatabase()
     .then(getUsers)
-    .then(successResponse)
+    .then((t) => successResponse(t))
     .catch(err => ({
       statusCode: err.statusCode || 500,
       headers: { 'Content-Type': 'text/plain' },

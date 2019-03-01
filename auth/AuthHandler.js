@@ -16,8 +16,8 @@ module.exports.register = (event, context) => {
     .then(() =>
       register(JSON.parse(event.body))
     )
-    .then(successResponse)
-    .catch(errorResponse);
+    .then((t) => successResponse(t))
+    .catch(e => errorResponse(e));
 };
 
 function signToken(id) {
@@ -68,11 +68,7 @@ module.exports.login = (event, context) => {
         login(JSON.parse(event.body))
       )
       .then((t) => successResponse(t))
-      .catch(err => ({
-        statusCode: err.statusCode || 500,
-        headers: { 'Content-Type': 'text/plain' },
-        body: err.message
-      }));
+      .catch(e => errorResponse(e))
   };
 
   function login(eventBody) {
@@ -100,7 +96,7 @@ module.exports.login = (event, context) => {
       .then(() =>
         me(event.requestContext.authorizer.principalId) // the decoded.id from the VerifyToken.auth will be passed along as the principalId under the authorizer
       )
-      .then(successResponse)
+      .then((t) => successResponse(t))
       .catch(err => ({
         statusCode: err.statusCode || 500,
         headers: { 'Content-Type': 'text/plain' },

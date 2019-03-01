@@ -11,16 +11,16 @@ module.exports.getAll = (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   return connectToDatabase()
     .then(getClipboardLabels.bind(this, getUserId(event)))
-    .then(successResponse)
-    .catch(errorResponse);
+    .then((t) => successResponse(t))
+    .catch(e => errorResponse(e));
 };
 
 module.exports.create = (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     return connectToDatabase()
         .then(createClipboardLabel.bind(this, getUserId(event), event.body))
-        .then(successResponse)
-        .catch(errorResponse);
+        .then((t) => successResponse(t))
+        .catch(e => errorResponse(e));
   };
 
   module.exports.delete = (event, context) => {
@@ -28,8 +28,8 @@ module.exports.create = (event, context) => {
     const {id} = event.pathParameters;
     return connectToDatabase()
         .then(deleteClipboardLabel.bind(this, getUserId(event), id))
-        .then(successResponse)
-        .catch(errorResponse);
+        .then((t) => successResponse(t))
+        .catch(e => errorResponse(e));
   };
 
 

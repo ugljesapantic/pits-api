@@ -7,12 +7,12 @@ exports.successResponse =  (body) => ({
   body: JSON.stringify(body)
 })
 
-exports.errorResponse = (error) => ({
-  statusCode: err.statusCode || 500,
+exports.errorResponse = (err) => ({
+  statusCode: err && err.statusCode || 500,
   headers: { 'Content-Type': 'text/plain' },
   headers: {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': true,
   },
-  body: err.message
+  body: err && err.message || ''
 })
