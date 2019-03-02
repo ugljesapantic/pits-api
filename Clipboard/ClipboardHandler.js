@@ -12,16 +12,16 @@ module.exports.getAll = (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   return connectToDatabase()
     .then(getClipboards.bind(this, getUserId(event)))
-    .then((t) => successResponse(t))
-    .catch(e => errorResponse(e));
+    .then(successResponse)
+    .catch(errorResponse);
 };
 
 module.exports.create = (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     return connectToDatabase()
         .then(createClipboard.bind(this, getUserId(event), event.body))
-        .then((t) => successResponse(t))
-        .catch(e => errorResponse(e));
+        .then(successResponse)
+        .catch(errorResponse);
   };
 
   module.exports.update = (event, context) => {
@@ -30,8 +30,8 @@ module.exports.create = (event, context) => {
     const filter = {"_id": id};
     return connectToDatabase()
         .then(update.bind(this, filter, JSON.parse(event.body)))
-        .then((t) => successResponse(t))
-        .catch(e => errorResponse(e));
+        .then(successResponse)
+        .catch(errorResponse);
   };
 
 
@@ -42,8 +42,8 @@ module.exports.create = (event, context) => {
     const filter = {"_id": id, "items._id": item_id};
     return connectToDatabase()
         .then(updateItem.bind(this, filter, JSON.parse(event.body)))
-        .then((t) => successResponse(t))
-        .catch(e => errorResponse(e));
+        .then(successResponse)
+        .catch(errorResponse);
   };
 
   module.exports.deleteItem = (event, context) => {
@@ -52,8 +52,8 @@ module.exports.create = (event, context) => {
     const filter = {"_id": id, "items._id": item_id};
     return connectToDatabase()
         .then(deleteItem.bind(this, filter))
-        .then((t) => successResponse(t))
-        .catch(e => errorResponse(e));
+        .then(successResponse)
+        .catch(errorResponse);
   };
 
 //   unify error handling jbt, also the success
@@ -63,16 +63,16 @@ module.exports.create = (event, context) => {
     const filter = {"_id": id};
     return connectToDatabase()
         .then(addItem.bind(this, filter))
-        .then((t) => successResponse(t))
-        .catch(e => errorResponse(e));
+        .then(successResponse)
+        .catch(errorResponse);
   };
 
   module.exports.deleteAll = (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     return connectToDatabase()
         .then(deleteAllClipboards.bind(this, getUserId(event)))
-        .then((t) => successResponse(t))
-        .catch(e => errorResponse(e));
+        .then(successResponse)
+        .catch(errorResponse);
   };
 
   module.exports.remove = (event, context) => {
@@ -80,8 +80,8 @@ module.exports.create = (event, context) => {
     const filter = {user_id: getUserId(event), _id: event.pathParameters.id}
     return connectToDatabase()
         .then(remove.bind(this, filter))
-        .then((t) => successResponse(t))
-        .catch(e => errorResponse(e));
+        .then(successResponse)
+        .catch(errorResponse);
   };
 
 /**
