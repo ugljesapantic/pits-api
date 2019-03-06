@@ -25,7 +25,10 @@ provider:
     JWT_SECRET: ${self:custom.secrets.JWT_SECRET}
     DB: ${self:custom.secrets.DB}
 
+# todo split at one point in future
 functions:
+
+  #auth
   verify-token:
     handler: auth/VerifyToken.auth
 
@@ -62,6 +65,7 @@ functions:
           method: get
           cors: true
 
+  #clipboard
   getClipboards:
     handler: clipboard/ClipboardHandler.getAll
     events:
@@ -161,5 +165,77 @@ functions:
           authorizer: verify-token
           cors: true
 
+  #shopping list
+  getShoppingLists:
+    handler: shopping-list/ShoppingListHandler.getAll
+    events:
+      - http:
+          path: shopping-lists
+          method: get
+          authorizer: verify-token
+          cors: true
+
+  deleteAllShoppingLists:
+    handler: shopping-list/ShoppingListHandler.deleteAll
+    events:
+      - http:
+          path: shopping-lists
+          method: delete
+          authorizer: verify-token
+          cors: true
+
+  createShoppingList:
+    handler: shopping-list/ShoppingListHandler.create
+    events:
+      - http:
+          path: shopping-lists
+          method: post
+          authorizer: verify-token
+          cors: true
+
+  updateShoppingList:
+    handler: shopping-list/ShoppingListHandler.update
+    events:
+      - http:
+          path: shopping-lists/{id}
+          method: patch
+          authorizer: verify-token
+          cors: true
+          
+  removeShoppingList:
+    handler: shopping-list/ShoppingListHandler.remove
+    events:
+      - http:
+          path: shopping-lists/{id}
+          method: delete
+          authorizer: verify-token
+          cors: true
+
+  updateShoppingListItem:
+    handler: shopping-list/ShoppingListHandler.updateItem
+    events:
+      - http:
+          path: shopping-lists/{id}/items/{item_id}
+          method: patch
+          authorizer: verify-token
+          cors: true
+
+  deleteShoppingListItem:
+    handler: shopping-list/ShoppingListHandler.deleteItem
+    events:
+      - http:
+          path: shopping-lists/{id}/items/{item_id}
+          method: delete
+          authorizer: verify-token
+          cors: true
+          
+  addShoppingListItem:
+    handler: shopping-list/ShoppingListHandler.addItem
+    events:
+      - http:
+          path: shopping-lists/{id}/items
+          method: post
+          authorizer: verify-token
+          cors: true
 plugins:
   - serverless-offline
