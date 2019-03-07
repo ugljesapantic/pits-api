@@ -4,7 +4,10 @@ const Schema = mongoose.Schema;
 const ShoppingListSchema = new mongoose.Schema({
     user_id: { type: Schema.Types.ObjectId, ref: 'User' },
     title: String,
-    online: Boolean,
+    online: {
+        type: Boolean,
+        default: true
+    },
     items: [{
         name: String,
         purchased: Boolean,

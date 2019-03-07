@@ -99,7 +99,7 @@ module.exports.create = (event, context) => {
 function createShoppingList(id, body) {
     return ShoppingList.create({
         user_id: id,
-        ...JSON.parse(body)
+        ...JSON.parse(body),
     })
       .then(list => list)
       .catch(err => Promise.reject(new Error(err)));
