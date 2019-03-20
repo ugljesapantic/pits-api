@@ -9,9 +9,15 @@ const ShoppingListSchema = new mongoose.Schema({
         default: true
     },
     items: [{
-        name: String,
-        purchased: Boolean,
-        ordered: Boolean
+        title: String,
+        purchased: {
+            type: Boolean,
+            default: false
+        },
+        ordered: {
+            type: Boolean,
+            default: false
+        }
     }]
 });
 mongoose.model('ShoppingList', ShoppingListSchema);

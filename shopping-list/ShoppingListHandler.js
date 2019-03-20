@@ -60,7 +60,7 @@ module.exports.create = (event, context) => {
     const {id} = event.pathParameters;
     const filter = {"_id": id};
     return connectToDatabase()
-        .then(addItem.bind(this, filter))
+        .then(addItem.bind(this, filter, JSON.parse(event.body)))
         .then(successResponse)
         .catch(errorResponse);
   };
@@ -108,10 +108,12 @@ function createShoppingList(id, body) {
 //   SOME ERROR HANDLIN
 
   function updateItem(filter, body) {
-      return ShoppingList.findOneAndUpdate(
-          filter, 
-          {$set: {"items.$.value": body.value,"items.$.title": body.title}},
-          {new: true}).then(doc =>  doc.items.id(filter["items._id"]));
+    let update = {};
+    for (let key in body) update[`items.$.${key}`] = body[key];
+    return ShoppingList.findOneAndUpdate(
+        filter, 
+        {$set: update},
+        {new: true}).then(doc =>  doc.items.id(filter["items._id"]));
   }
 
   function update(filter, body) {
@@ -131,7 +133,7 @@ function createShoppingList(id, body) {
   function addItem(filter, body) {
     return ShoppingList.findOneAndUpdate(
         filter, 
-        {$push: {"items": {}}},
+        {$push: {"items": body}},
         {new: true}).then(doc =>  doc.items[doc.items.length - 1])
   };
 
