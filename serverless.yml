@@ -111,33 +111,6 @@ functions:
           authorizer: verify-token
           cors: true
 
-  getClipboardLabels:
-    handler: clipboard/ClipboardLabelHandler.getAll
-    events:
-      - http:
-          path: clipboard-labels
-          method: get
-          authorizer: verify-token
-          cors: true
-
-  createClipboardLabel:
-    handler: clipboard/ClipboardLabelHandler.create
-    events:
-      - http:
-          path: clipboard-labels
-          method: post
-          authorizer: verify-token
-          cors: true
-
-  deleteClipboardLabel:
-    handler: clipboard/ClipboardLabelHandler.delete
-    events:
-      - http:
-          path: clipboard-labels/{id}
-          method: delete
-          authorizer: verify-token
-          cors: true
-
   updateItem:
     handler: clipboard/ClipboardHandler.updateItem
     events:
