@@ -138,6 +138,52 @@ functions:
           authorizer: verify-token
           cors: true
 
+  #dairy
+  getDairies:
+    handler: dairy/DairyHandler.getAll
+    events:
+      - http:
+          path: dairies
+          method: get
+          authorizer: verify-token
+          cors: true
+
+  removeAllDairies:
+    handler: dairy/DairyHandler.removeAll
+    events:
+      - http:
+          path: dairies
+          method: delete
+          authorizer: verify-token
+          cors: true
+
+  createDairy:
+    handler: dairy/DairyHandler.create
+    events:
+      - http:
+          path: dairies
+          method: post
+          authorizer: verify-token
+          cors: true
+
+  updateDairy:
+    handler: dairy/DairyHandler.update
+    events:
+      - http:
+          path: dairies/{id}
+          method: patch
+          authorizer: verify-token
+          cors: true
+          
+  removeDairy:
+    handler: dairy/DairyHandler.remove
+    events:
+      - http:
+          path: dairies/{id}
+          method: delete
+          authorizer: verify-token
+          cors: true
+
   #shopping list
   getShoppingLists:
     handler: shopping-list/ShoppingListHandler.getAll
