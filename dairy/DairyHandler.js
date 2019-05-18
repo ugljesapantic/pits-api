@@ -3,6 +3,9 @@
 const connectToDatabase = require('../db');
 const Dairy = require('./Dairy');
 const {successResponse, errorResponse} = require('./../utls/http.utils');
+const AWS = require('aws-sdk');
+const uuid = require('uuid');
+const s3 = new AWS.S3();
 
 /**
  * Functions
@@ -17,10 +20,10 @@ module.exports.getAll = (event, context) => {
     .catch(errorResponse);
 };
 
-module.exports.create = (event, context) => {
+module.exports.create = (event, context, callback) => {
     context.callbackWaitsForEmptyEventLoop = false;
     return connectToDatabase()
-        .then(createDairy.bind(this, getUserId(event), event.body))
+        .then(createDairy.bind(this, getUserId(event), event.body, callback))
         .then(successResponse)
         .catch(errorResponse);
 };
@@ -56,6 +59,12 @@ module.exports.create = (event, context) => {
  * Helpers
  */
 
+const createErrorResponse = (statusCode, message) => ({
+    statusCode: statusCode || 501,
+    headers: { 'Content-Type': 'text/plain' },
+    body: message,
+  });
+
  function getUserId(event) {
     return event.requestContext.authorizer.principalId;
  }
@@ -66,13 +75,37 @@ module.exports.create = (event, context) => {
     .catch(err => Promise.reject(new Error(err)));
 }
 
-function createDairy(id, body) {
-    return Dairy.create({
-        user_id: id,
-        ...JSON.parse(body)
-    })
-      .then(dairy => dairy)
-      .catch(err => Promise.reject(new Error(err)));
+function createDairy(id, bodyJson, callback) {
+    const body = JSON.parse(bodyJson);
+    if(body.type === 'text') {
+        return Dairy.create({
+            user_id: id,
+            ...body
+        })
+          .then(dairy => dairy)
+          .catch(err => Promise.reject(new Error(err)));
+    } else {
+        const base64Data = body.content.replace(/^data:application\/octet-stream;base64,/,"");
+        const binaryData = new Buffer(base64Data, 'base64');
+        const name = uuid.v1();
+        return s3.putObject({
+            Bucket: 'pits-dairy',
+            Key: `${name}.webm`,
+            Body: binaryData,
+            ContentType: 'audio/webm',
+            ACL: 'public-read',
+          }).promise().then((x) => {
+            return Dairy.create({
+                user_id: id,
+                ...body,
+                content: `https://s3.eu-central-1.amazonaws.com/pits-dairy/${name}.webm`
+            })
+              .then(dairy => dairy)
+              .catch(err => Promise.reject(new Error(err)));
+          }).catch((e) => {
+              callback(null, createErrorResponse(500, 'Fail'))
+          })
+    }
   }
 
   function update(filter, body) {

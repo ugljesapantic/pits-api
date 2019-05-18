@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 const DairySchema = new mongoose.Schema({
     user_id: { type: Schema.Types.ObjectId, ref: 'User' },
     content: String,
-    date: String
+    date: String,
+    type: String,
 });
 mongoose.model('Dairy', DairySchema);
 
