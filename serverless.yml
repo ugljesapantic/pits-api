@@ -26,11 +26,12 @@ provider:
     JWT_SECRET: ${self:custom.secrets.JWT_SECRET}
     DB: ${self:custom.secrets.DB}
   iamRoleStatements:
-    - Effect: Allow
+    - Effect: "Allow"
       Action:
-        - s3:PutObject
-        - s3:PutObjectAcl
-      Resource: "arn:aws:s3:::${self:custom.bucket}/*"
+        - "s3:PutObject"
+        - "s3:PutObjectAcl"
+      Resource: "*"
+
 # todo split at one point in future
 functions:
 
