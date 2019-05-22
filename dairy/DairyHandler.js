@@ -38,14 +38,6 @@ module.exports.create = (event, context, callback) => {
         .catch(errorResponse);
   };
 
-  module.exports.removeAll = (event, context) => {
-    context.callbackWaitsForEmptyEventLoop = false;
-    return connectToDatabase()
-        .then(removeAllDairies.bind(this, getUserId(event)))
-        .then(successResponse)
-        .catch(errorResponse);
-  };
-
   module.exports.remove = (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     const filter = {user_id: getUserId(event), _id: event.pathParameters.id}
@@ -86,7 +78,7 @@ function createDairy(id, bodyJson, callback) {
           .catch(err => Promise.reject(new Error(err)));
     } else {
         const base64Data = body.content.replace(/^data:application\/octet-stream;base64,/,"");
-        const binaryData = new Buffer(base64Data, 'base64');
+        const binaryData = Buffer.alloc(base64Data, 'base64');
         const name = uuid.v1();
         return s3.putObject({
             Bucket: 'pits-dairy',
@@ -94,7 +86,7 @@ function createDairy(id, bodyJson, callback) {
             Body: binaryData,
             ContentType: 'audio/webm',
             ACL: 'public-read',
-          }).promise().then((x) => {
+          }).promise().then(() => {
             return Dairy.create({
                 user_id: id,
                 ...body,
@@ -102,7 +94,7 @@ function createDairy(id, bodyJson, callback) {
             })
               .then(dairy => dairy)
               .catch(err => Promise.reject(new Error(err)));
-          }).catch((e) => {
+          }).catch(() => {
               callback(null, createErrorResponse(500, 'Fail'))
           })
     }
@@ -118,9 +110,3 @@ function createDairy(id, bodyJson, callback) {
 function remove(filter) {
     return Dairy.deleteOne(filter).catch(err => Promise.reject(new Error(err)));
 }
-
-function removeAllDairies(id) {
-    return Clipboard.deleteMany({
-        user_id: id,
-    }).catch(err => Promise.reject(new Error(err)));
-  }

@@ -135,7 +135,7 @@ function createClipboard(id, body) {
         filter, 
         {$push: {"items": body}},
         {new: true}).then(doc =>  doc.items[doc.items.length - 1])
-  };
+  }
 
   function deleteAllClipboards(id) {
     return Clipboard.deleteMany({
