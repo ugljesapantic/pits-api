@@ -26,15 +26,14 @@ provider:
     JWT_SECRET: ${self:custom.secrets.JWT_SECRET}
     DB: ${self:custom.secrets.DB}
   iamRoleStatements:
-    - Effect: "Allow"
+    - Effect: 'Allow'
       Action:
-        - "s3:PutObject"
-        - "s3:PutObjectAcl"
-      Resource: "*"
+        - 's3:PutObject'
+        - 's3:PutObjectAcl'
+      Resource: '*'
 
 # todo split at one point in future
 functions:
-
   #auth
   verify-token:
     handler: auth/VerifyToken.auth
@@ -108,7 +107,7 @@ functions:
           method: patch
           authorizer: verify-token
           cors: true
-          
+
   removeClipboard:
     handler: clipboard/ClipboardHandler.remove
     events:
@@ -135,7 +134,7 @@ functions:
           method: delete
           authorizer: verify-token
           cors: true
-          
+
   addItem:
     handler: clipboard/ClipboardHandler.addItem
     events:
@@ -181,7 +180,7 @@ functions:
           method: patch
           authorizer: verify-token
           cors: true
-          
+
   removeDairy:
     handler: dairy/DairyHandler.remove
     events:
@@ -227,7 +226,7 @@ functions:
           method: patch
           authorizer: verify-token
           cors: true
-          
+
   removeShoppingList:
     handler: shopping-list/ShoppingListHandler.remove
     events:
@@ -254,7 +253,7 @@ functions:
           method: delete
           authorizer: verify-token
           cors: true
-          
+
   addShoppingListItem:
     handler: shopping-list/ShoppingListHandler.addItem
     events:

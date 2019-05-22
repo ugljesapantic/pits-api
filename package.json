@@ -19,8 +19,12 @@
     }
   },
   "lint-staged": {
-    "*.{js,json,yml}": [
+    "**/*.{js,json,yml}": [
       "prettier --write",
+      "git add"
+    ],
+    "**/*.{js}": [
+      "eslint --fix",
       "git add"
     ]
   },
