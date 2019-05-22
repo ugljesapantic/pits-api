@@ -4,22 +4,6 @@
   "description": "Personal Issue Tracking System",
   "author": "Ugljesa Pantic",
   "license": "ISC",
-  "scripts": {
-    "start": "sls offline start --skipCacheInvalidation",
-    "deploy": "sls deploy --stage prod --region eu-central-1"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "src/**/*.{js}": [
-      "prettier --write",
-      "eslint --fix",
-      "git add"
-    ]
-  },
   "dependencies": {
     "aws-sdk": "^2.456.0",
     "bcryptjs": "^2.4.3",
@@ -29,9 +13,27 @@
     "uuid": "^3.3.2",
     "validator": "^10.11.0"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js}": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "scripts": {
+    "start": "sls offline start --skipCacheInvalidation",
+    "deploy": "sls deploy --stage prod --region eu-central-1"
+  },
   "devDependencies": {
     "eslint": "^5.16.0",
     "eslint-plugin-node": "^9.0.1",
+    "husky": "^2.3.0",
+    "lint-staged": "^8.1.7",
     "prettier": "^1.17.1",
     "serverless-offline": "^4.2.2"
   },
