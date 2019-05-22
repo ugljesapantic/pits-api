@@ -3,9 +3,9 @@ const User = require('../user/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 // TODO use imports everywhere
-const {successResponse, errorResponse} = require('./../utls/http.utils');
+const { successResponse, errorResponse } = require('./../utls/http.utils');
 
-/* 
+/*
  * Functions
  * https://medium.freecodecamp.org/a-crash-course-on-securing-serverless-apis-with-json-web-tokens-ff657ab2f5a5
  * investigate
@@ -13,9 +13,7 @@ const {successResponse, errorResponse} = require('./../utls/http.utils');
 module.exports.register = (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   return connectToDatabase()
-    .then(() =>
-      register(JSON.parse(event.body))
-    )
+    .then(() => register(JSON.parse(event.body)))
     .then(successResponse)
     .catch(errorResponse);
 };
@@ -28,92 +26,98 @@ function signToken(id) {
 
 function checkIfInputIsValid(eventBody) {
   // TODO use custom validations
-  if (
-    !(eventBody.password &&
-      eventBody.password.length >= 7)
-  ) {
-    return Promise.reject(new Error('Password error. Password needs to be longer than 8 characters.'));
+  if (!(eventBody.password && eventBody.password.length >= 7)) {
+    return Promise.reject(
+      new Error(
+        'Password error. Password needs to be longer than 8 characters.'
+      )
+    );
   }
 
-  if (
-    !(eventBody.email &&
-      typeof eventBody.email === 'string')
-  ) return Promise.reject(new Error('Email error. Email must have valid characters.'));
+  if (!(eventBody.email && typeof eventBody.email === 'string'))
+    return Promise.reject(
+      new Error('Email error. Email must have valid characters.')
+    );
 
   return Promise.resolve();
 }
 
 function register(eventBody) {
   return checkIfInputIsValid(eventBody) // validate input
-    .then(() =>
-      User.findOne({ email: eventBody.email }) // check if user exists
+    .then(
+      () => User.findOne({ email: eventBody.email }) // check if user exists
     )
-    .then(user =>
-      user
-        ? Promise.reject(new Error('User with that email exists.'))
-        : bcrypt.hash(eventBody.password, 8) // hash the pass
+    .then(
+      user =>
+        user
+          ? Promise.reject(new Error('User with that email exists.'))
+          : bcrypt.hash(eventBody.password, 8) // hash the pass
     )
-    .then(hash =>
-      User.create({ name: eventBody.name, email: eventBody.email, password: hash }) 
+    .then(
+      hash =>
+        User.create({
+          name: eventBody.name,
+          email: eventBody.email,
+          password: hash
+        })
       // create the new user
     )
-    .then(user => ({ auth: true, token: signToken(user._id), email: user.email })); 
-    // sign the token and send it back
+    .then(user => ({
+      auth: true,
+      token: signToken(user._id),
+      email: user.email
+    }));
+  // sign the token and send it back
 }
 
 module.exports.login = (event, context) => {
-    context.callbackWaitsForEmptyEventLoop = false;
-    return connectToDatabase()
-      .then(() =>
-        login(JSON.parse(event.body))
-      )
-      .then(successResponse)
-      .catch(errorResponse)
-  };
+  context.callbackWaitsForEmptyEventLoop = false;
+  return connectToDatabase()
+    .then(() => login(JSON.parse(event.body)))
+    .then(successResponse)
+    .catch(errorResponse);
+};
 
-  function login(eventBody) {
-    return User.findOne({ email: eventBody.email })
-      .then(user =>
-        !user
-          ? Promise.reject(new Error('User with that email does not exits.'))
-          : comparePassword(eventBody.password, user.password, user._id)
-      )
-      .then(token => ({ auth: true, token: token }));
-  }
-  
-  function comparePassword(eventPassword, userPassword, userId) {
-    return new Promise((resolve, reject) => {
-      bcrypt.compare(eventPassword, userPassword, function (err, res)  {
-        !res ? reject(new Error('The credentials do not match.')) : resolve(signToken(userId))
-      });
-    })
-  }
+function login(eventBody) {
+  return User.findOne({ email: eventBody.email })
+    .then(user =>
+      !user
+        ? Promise.reject(new Error('User with that email does not exits.'))
+        : comparePassword(eventBody.password, user.password, user._id)
+    )
+    .then(token => ({ auth: true, token: token }));
+}
 
-  
-  module.exports.me = (event, context) => {
-    context.callbackWaitsForEmptyEventLoop = false;
-    return connectToDatabase()
-      .then(() =>
-        me(event.requestContext.authorizer.principalId) // the decoded.id from the VerifyToken.auth will be passed along as the principalId under the authorizer
-      )
-      .then(successResponse)
-      .catch(err => ({
-        statusCode: err.statusCode || 500,
-        headers: { 'Content-Type': 'text/plain' },
-        body: { stack: err.stack, message: err.message }
-      }));
-  };
-  
-  /*
-   * Helpers
-   */
-  
-  function me(userId) {
-    return User.findById(userId, { password: 0 })
-      .then(user =>
-        !user
-          ? Promise.reject('No user found.')
-          : user
-      )
-      .catch(err => Promise.reject(new Error(err)));
-  }
+function comparePassword(eventPassword, userPassword, userId) {
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(eventPassword, userPassword, function(err, res) {
+      !res
+        ? reject(new Error('The credentials do not match.'))
+        : resolve(signToken(userId));
+    });
+  });
+}
+
+module.exports.me = (event, context) => {
+  context.callbackWaitsForEmptyEventLoop = false;
+  return connectToDatabase()
+    .then(
+      () => me(event.requestContext.authorizer.principalId) // the decoded.id from the VerifyToken.auth will be passed along as the principalId under the authorizer
+    )
+    .then(successResponse)
+    .catch(err => ({
+      statusCode: err.statusCode || 500,
+      headers: { 'Content-Type': 'text/plain' },
+      body: { stack: err.stack, message: err.message }
+    }));
+};
+
+/*
+ * Helpers
+ */
+
+function me(userId) {
+  return User.findById(userId, { password: 0 })
+    .then(user => (!user ? Promise.reject('No user found.') : user))
+    .catch(err => Promise.reject(new Error(err)));
+}

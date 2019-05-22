@@ -23,7 +23,7 @@ module.exports.getUsers = (event, context) => {
  * Helpers
  */
 
- function getUsers() {
+function getUsers() {
   return User.find({})
     .then(users => users)
     .catch(err => Promise.reject(new Error(err)));
